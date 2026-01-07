@@ -21,22 +21,9 @@
 		D407189F2F04894300A7347D /* CropTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CropTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		51CE3AC42EF619EB007BFBB2 /* Exceptions for "Crop" folder in "Crop" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				CropOverlayView.swift,
-			);
-			target = 57A7D6C62EAD14D900A2F6D9 /* Crop */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		57A7D6C92EAD14D900A2F6D9 /* Crop */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				51CE3AC42EF619EB007BFBB2 /* Exceptions for "Crop" folder in "Crop" target */,
-			);
 			path = Crop;
 			sourceTree = "<group>";
 		};

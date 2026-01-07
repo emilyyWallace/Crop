@@ -31,7 +31,6 @@ struct CropRectangleView: View {
 	}
 	
     var body: some View {
-		let imageViewRect = image.extent.applying(viewTransform)
 		ZStack {
 			// Border
 			
@@ -66,11 +65,8 @@ struct CropRectangleView: View {
 			.gesture(
 				DragGesture() //Drag gesture for Center
 					.onChanged { value in
-						var prevCenter:CGPoint = .zero
-						
 						if dragStartRect == nil {
 							dragStartRect = viewRect
-							prevCenter = CGPoint(x: cropAdjustment.cropRect.midX, y: cropAdjustment.cropRect.midY)
 						}
 						
 						var dragViewRect = viewRect
@@ -82,37 +78,12 @@ struct CropRectangleView: View {
 						)
 						
 						cropAdjustment.cropRect = dragViewRect.applying(viewTransform.inverted())
-						 
-						
-//						if !cropAdjustment.constrain {
-//							let start = dragStartRect!
-//							dragViewRect = start.offsetBy(
-//								dx: value.translation.width,
-//								dy: value.translation.height
-//							)
-//							
-//							cropAdjustment.cropRect = dragViewRect.applying(viewTransform.inverted())
-//						} else {
-//							let start = dragStartRect!
-//							dragViewRect = start.offsetBy(
-//								dx: value.translation.width,
-//								dy: value.translation.height
-//							)
-//							let angleInRadians:CGFloat = CGFloat(cropAdjustment.straighten * .pi/180.0)
-//							let newCropRect = dragViewRect.applying(viewTransform.inverted())
-//							
-//							cropAdjustment.cropRect = newCropRect.constrainCenterToInsetDiamond(bounds: image.extent, angle: angleInRadians, fromCenter: prevCenter)
-//							
-//							prevCenter = CGPoint(x: cropAdjustment.cropRect.midX, y: cropAdjustment.cropRect.midY)
-//						}
 
 					}
 					.onEnded { _ in
 						dragStartRect = nil
 					}
 			)
-			
-			
 			
 			/// Corners
 			Handle(
@@ -255,9 +226,6 @@ struct CropRectangleView: View {
 						}
 					}
 				}
-
-				
-				
 				let rotatedCropCorners:[CGPoint] = cropCorners.map { corner in
 					CGRect.rotatePoint(corner, around: originalCropCenter, by: angleInRadians)
 				}
@@ -265,9 +233,6 @@ struct CropRectangleView: View {
 				let boundingBox = CGRect.boundingBox(for: rotatedCropCorners)
 				let insetWidth = boundingBox.width/2
 				let insetHeight = boundingBox.height/2
-				
-				
-				
 				
 				let insetedImageExtent = image.extent.insetBy(dx: insetWidth, dy: insetHeight)
 				
@@ -277,7 +242,6 @@ struct CropRectangleView: View {
 					CGPoint(x: insetedImageExtent.maxX, y: insetedImageExtent.maxY),
 					CGPoint(x: insetedImageExtent.minX, y: insetedImageExtent.maxY)
 				]
-				let insetCenter = CGPoint(x: insetedImageExtent.midX, y: insetedImageExtent.midY)
 				
 				let rotatedInsetCorners:[CGPoint] = insetCorners.map { corner in
 					CGRect.rotatePoint(corner, around: originalCenter, by: angleInRadians).applying(viewTransform)
@@ -288,8 +252,6 @@ struct CropRectangleView: View {
 				path.stroke(Color.orange, lineWidth: 2)
 				
 			}
-			
-			
 		}
     }
 	
@@ -308,7 +270,6 @@ struct CropRectangleView: View {
 		
 		path.closeSubpath()
 		
-		
 		return path
 	}
 	
@@ -319,8 +280,6 @@ struct CropRectangleView: View {
 				if dragStartRect == nil {
 					dragStartRect = viewRect
 				}
-
-				let dragViewRect = viewRect
 
 				let start = dragStartRect!
 				var changedRect = CGRect()
@@ -351,16 +310,12 @@ struct CropRectangleView: View {
 					newWidth = start.width - dx
 					newHeight = start.height - dy
 
-					
-					//work
-					
-					
 				case .topRight:
 					dx = value.translation.width
 					dy = value.translation.height
 
 					if start.width+dx < MIN_SIZE {
-						dx = MIN_SIZE - start.width  // FIX: was start.width-MIN_SIZE
+						dx = MIN_SIZE - start.width
 					}
 
 					if start.height-dy < MIN_SIZE {
@@ -382,7 +337,7 @@ struct CropRectangleView: View {
 					}
 
 					if start.height+dy < MIN_SIZE {
-						dy = MIN_SIZE - start.height  // FIX: was start.height-MIN_SIZE
+						dy = MIN_SIZE - start.height
 					}
 					
 					newX = start.minX + dx
@@ -395,11 +350,11 @@ struct CropRectangleView: View {
 					dy = value.translation.height
 
 					if start.width+dx < MIN_SIZE {
-						dx = MIN_SIZE - start.width  // FIX: was start.width-MIN_SIZE
+						dx = MIN_SIZE - start.width
 					}
 
 					if start.height+dy < MIN_SIZE {
-						dy = MIN_SIZE - start.height  // FIX: was start.height-MIN_SIZE
+						dy = MIN_SIZE - start.height
 					}
 					
 					newX = start.minX
@@ -436,7 +391,7 @@ struct CropRectangleView: View {
 					dx = value.translation.width
 
 					if start.width+dx < MIN_SIZE {
-						dx = MIN_SIZE - start.width  // FIX: was start.width-MIN_SIZE
+						dx = MIN_SIZE - start.width
 					}
 					
 					newX = start.minX
@@ -456,16 +411,6 @@ struct CropRectangleView: View {
 					newWidth = start.width
 					newHeight = start.height + dy
 				}
-				
-//				if newWidth < MIN_SIZE {
-//					//newX = start.minX
-//					newWidth = MIN_SIZE
-//				}
-//				
-//				if newHeight < MIN_SIZE {
-//					//newY = start.minY
-//					newHeight = MIN_SIZE
-//				}
 				
 				changedRect = CGRect(
 					x: newX,
@@ -524,7 +469,3 @@ struct EdgeHandle: View {
 		.position(x: center.x, y: center.y)
 	}
 }
-
-//#Preview {
-//    CropRectangleView()
-//}

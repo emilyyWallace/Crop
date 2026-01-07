@@ -12,7 +12,6 @@ import CoreImage
 
 struct Viewer<Overlay: View, Footer: View>: View {
     let ciImage: CIImage?
-	let allowPanZoom: Bool
     private let context = CIContext()
     let overlay: (CGAffineTransform) -> Overlay
     let footer: () -> Footer
@@ -20,15 +19,11 @@ struct Viewer<Overlay: View, Footer: View>: View {
 	@State var scale: CGFloat = 1.0
 	@State var offset: CGPoint = .zero
 	@State var viewSize: CGSize = .zero
-	
-//	@State private var gestureScale: CGFloat = 1.0
-//	@State private var gestureOffset: CGSize = .zero
 
     init(ciImage: CIImage?, allowPanZoom: Bool = false, @ViewBuilder overlay: @escaping (CGAffineTransform) -> Overlay = { _ in EmptyView() }, @ViewBuilder footer: @escaping () -> Footer = { EmptyView() }) {
         self.ciImage = ciImage
         self.overlay = overlay
         self.footer = footer
-		self.allowPanZoom = allowPanZoom
     }
 
     var body: some View {

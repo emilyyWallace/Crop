@@ -25,7 +25,7 @@ struct ContentView: View {
         let cropAdjustment = CropAdjustment()
         _cropAdjustment = State(initialValue: cropAdjustment)
         _interactiveEdit = State(initialValue: Edit(adjustments: [cropAdjustment], interactive: true))
-        _finalEdit = State(initialValue: Edit(adjustments: [cropAdjustment, BlackAndWhiteAdjustment()], interactive: false))
+        _finalEdit = State(initialValue: Edit(adjustments: [cropAdjustment], interactive: false))
     }
 
     
@@ -33,29 +33,15 @@ struct ContentView: View {
         
         
         GeometryReader { geometry in
-
 			let footerHeight = 150.0
-            let buttonSize = 44.0
-            let buttonMargin = 10.0
-            let buttonForeground:Color = .white
-            let buttonBackground:Color = .gray
-        
-    
+
             VStack {
                 HStack(spacing: 10.0) {
                     VStack {
-						Slider(value: $zoomLevel, in: 0...400)
-						.onChange(of: zoomLevel) { oldValue, newValue in
-								  //cropAdjustment.straighten = newValue
-							  }
-						.padding()
-						
-                        Viewer(ciImage: image, allowPanZoom: true) { viewTransform in
+                        Viewer(ciImage: image) { viewTransform in
 							EmptyView()
                         } footer: {
                             VStack {
-                                Text("Image extent: \(image.extent.debugDescription)")
-
                                 ScrollView(.horizontal, showsIndicators: true) {
                                     HStack(spacing: 8) {
                                         ForEach(TestImages.allImageNames, id: \.self) { name in
@@ -95,7 +81,7 @@ struct ContentView: View {
 										reset()
 									}
                             }
-                            .frame(width:.infinity, height: footerHeight)
+                            .frame(width: .infinity, height: footerHeight)
                         }
                     }
                     .frame(maxWidth: .infinity)
@@ -103,11 +89,9 @@ struct ContentView: View {
                     VStack {
                         let editedImage = interactiveEdit.image(for: image)
                         Viewer(ciImage: editedImage) { viewTransform in
-                            // Put your edit overlay view in here
 							CropRectangleView(image: image, viewTransform: viewTransform, cropAdjustment: $cropAdjustment, viewRect: $viewRect, debug: $debug)
 				
                         } footer: {
-							// Put your straighten slider in here
                             VStack(spacing: 0.0) {
                                 HStack {
 									Button {
@@ -141,6 +125,8 @@ struct ContentView: View {
                                 }
                                 .padding()
 								
+								Text("Straighten: \(String(format: "%.2f", cropAdjustment.straighten))")
+								
 								Slider(value: $straighten, in: -45.0...45.0)
 								.onChange(of: straighten) { oldValue, newValue in
 										  cropAdjustment.straighten = newValue
@@ -155,11 +141,13 @@ struct ContentView: View {
                     VStack {
                         let finalImage = finalEdit.image(for: image)
                         Viewer(ciImage: finalImage) { _ in
-                            EmptyView()
+							if debug {
+								Color.red.opacity(0.3)
+							}
                         } footer: {
                             VStack {
                                 Text("Crop: \(cropAdjustment.cropRect.description())")
-                                Text("Straighten: \(String(format: "%.2f", cropAdjustment.straighten))")
+								Text("Image extent: \(image.extent.debugDescription)")
                             }
                             .frame(width:.infinity, height: footerHeight)
                        }
@@ -168,8 +156,6 @@ struct ContentView: View {
                 }
                 .onAppear {
 					reset()
-					//viewRect = cropAdjustment.cropRect.applying(viewTransform)
-                    
                 }
 
             }
@@ -180,10 +166,10 @@ struct ContentView: View {
 		 let imageSize = image.extent.size
 
 		 // Crop to 1/4 area (1/2 width × 1/2 height), centered
-		 let cropWidth = imageSize.width * 0.25
-		 let cropHeight = imageSize.height * 0.25
-		 let cropX = (imageSize.width - cropWidth) / 4   // centers horizontally
-		 let cropY = (imageSize.height - cropHeight) / 4  // centers vertically
+		let cropWidth = imageSize.width * 0.5
+		 let cropHeight = imageSize.height * 0.5
+		 let cropX = (imageSize.width - cropWidth) / 2   // centers horizontally
+		 let cropY = (imageSize.height - cropHeight) / 2  // centers vertically
 
 		 cropAdjustment.cropRect = CGRect(
 			 x: cropX,
@@ -191,28 +177,12 @@ struct ContentView: View {
 			 width: cropWidth,
 			 height: cropHeight
 		 )
-		//let imageRect = CGRect(x: cropX, y: cropY, width: cropWidth, height: cropHeight)
-		
-//		let imageExtent = image.extent
-//		let radians = CGFloat((self.straighten * Float.pi) / 180.0)
-//		let imageCenter = CGPoint(x: imageExtent.midX, y: imageExtent.midY)
-//
-//		// Rotate around image center
-//		var transform = CGAffineTransform.identity
-//		transform = transform.translatedBy(x: imageCenter.x, y: imageCenter.y)
-//		transform = transform.rotated(by: radians)
-//		transform = transform.translatedBy(x: -imageCenter.x, y: -imageCenter.y)
-
-		//viewRect = imageRect.applying(transform)
 			
-		
 		straighten = 0.0
 		cropAdjustment.straighten = 0.0
 		
 	 }
 }
-
-
 
 #Preview {
     ContentView()
