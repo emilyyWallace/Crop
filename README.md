@@ -44,3 +44,6 @@ Controls:
 **Constraining Crop Center During Drag**
 - Calculated an inset diamond by finding the bounding box of the rotated crop rectangle
 - Constrained the crop center to stay within this inset region so edges never exceed image bounds
+
+---
+*Created by Emily Wallace*
